@@ -2,10 +2,13 @@ package cmd
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/EFREI-M2-Dev/Go-Loganizer-YMF/internal/config"
+	"github.com/EFREI-M2-Dev/Go-Loganizer-YMF/internal/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -40,6 +43,14 @@ Elle peut traiter des logs provenant de différentes sources et formats, en extr
 
 				if _, err := os.Stat(t.Path); err != nil {
 					fmt.Printf("[%s] Erreur : impossible d'accéder au fichier (%v)\n", t.Id, err)
+					return
+				}
+
+				sleepMs := utils.RandomRange(50, 200)
+				time.Sleep(time.Duration(sleepMs) * time.Millisecond)
+
+				if rand.Float64() < 0.1 {
+					fmt.Printf("[%s] Erreur : parsing du log échoué\n", t.Id)
 					return
 				}
 
