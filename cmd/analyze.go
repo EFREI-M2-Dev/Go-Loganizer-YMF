@@ -26,5 +26,6 @@ Elle peut traiter des logs provenant de différentes sources et formats, en extr
 }
 
 func init() {
+	analyzeCmd.Flags().StringVarP(&configFilePath, "config", "c", "", "Chemin du fichier de configuration à utiliser")
 	rootCmd.AddCommand(analyzeCmd)
 }
