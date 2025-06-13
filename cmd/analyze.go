@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"sync"
 
 	"github.com/EFREI-M2-Dev/Go-Loganizer-YMF/internal/config"
 	"github.com/spf13/cobra"
@@ -28,7 +30,24 @@ Elle peut traiter des logs provenant de différentes sources et formats, en extr
 			return
 		}
 
-		fmt.Printf("Nombre de cibles à analyser : %d\n", len(targets))
+		var wg sync.WaitGroup
+
+		for _, target := range targets {
+			wg.Add(1)
+			go func(t config.InputTarget) {
+				defer wg.Done()
+				fmt.Printf("[%s] Démarrage de l'analyse du log : %s\n", t.Id, t.Path)
+
+				if _, err := os.Stat(t.Path); err != nil {
+					fmt.Printf("[%s] Erreur : impossible d'accéder au fichier (%v)\n", t.Id, err)
+					return
+				}
+
+				fmt.Printf("[%s] Analyse terminée avec succès !\n", t.Id)
+			}(target)
+		}
+		wg.Wait()
+		fmt.Println("Analyse de tous les logs terminée.")
 	},
 }
 
