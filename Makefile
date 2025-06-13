@@ -16,7 +16,11 @@ clean:
 	rm -rf $(OUT_DIR)
 
 run: build
-	$(OUT_DIR)/$(PROJECT_NAME)
+	@if [ -z "$(ARGUMENTS)" ]; then \
+		echo "Usage: make run ARGUMENTS='<command> [options]'"; \
+		exit 1; \
+	fi
+	$(OUT_DIR)/$(PROJECT_NAME) $(ARGUMENTS)
 
 test:
 	go test $(SRC_DIR)/...
