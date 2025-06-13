@@ -1,4 +1,4 @@
-module github.com/FlorentParis/loganizer-ymf
+module github.com/EFREI-M2-Dev/Go-Loganizer-YMF
 
 go 1.24.3
 
