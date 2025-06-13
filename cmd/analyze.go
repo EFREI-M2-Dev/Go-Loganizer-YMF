@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/EFREI-M2-Dev/Go-Loganizer-YMF/internal/config"
 	"github.com/spf13/cobra"
 )
 
@@ -21,11 +22,19 @@ Elle peut traiter des logs provenant de différentes sources et formats, en extr
 			return
 		}
 
-		fmt.Printf("Analyse des logs à partir du fichier : %s\n", configFilePath)
+		targets, err := config.LoadTargetsFromFile(configFilePath)
+		if err != nil {
+			fmt.Printf("Erreur lors du chargement du fichier de configuration : %v\n", err)
+			return
+		}
+
+		fmt.Printf("Nombre de cibles à analyser : %d\n", len(targets))
 	},
 }
 
 func init() {
-	analyzeCmd.Flags().StringVarP(&configFilePath, "config", "c", "", "Chemin du fichier de configuration à utiliser")
 	rootCmd.AddCommand(analyzeCmd)
+
+	analyzeCmd.Flags().StringVarP(&configFilePath, "config", "c", "", "Chemin du fichier de configuration à utiliser")
+	analyzeCmd.MarkFlagRequired("config")
 }
