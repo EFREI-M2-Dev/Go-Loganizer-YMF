@@ -37,4 +37,12 @@ func ExportResultsToJSON(results []CheckResult, outputPath string) error {
 
 	fmt.Printf("Résultats exportés vers : %s\n", outputPath)
 	return nil
+  
+func Contains(slice []string, item string) bool {
+	for _, s := range slice {
+		if s == item {
+			return true
+		}
+	}
+	return false
 }

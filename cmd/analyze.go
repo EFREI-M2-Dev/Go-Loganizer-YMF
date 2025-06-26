@@ -43,6 +43,11 @@ Elle peut traiter des logs provenant de différentes sources et formats, en extr
 			go func(t config.InputTarget) {
 				defer wg.Done()
 				result := analyzer.AnalyzeLogFile(t)
+
+				if result.Status == "error" {
+					fmt.Printf("%v\n", result.Err)
+				}
+
 				resultsChan <- result
 			}(target)
 		}
