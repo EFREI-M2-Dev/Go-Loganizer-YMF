@@ -20,12 +20,18 @@ func AnalyzeLogFile(target config.InputTarget) CheckResult{
 	fmt.Printf("[%s] Démarrage de l'analyse du log : %s\n", target.Id, target.Path)
 
 	if _, err := os.Stat(target.Path); err != nil {
-		fmt.Printf("[%s] Erreur : impossible d'accéder au fichier (%v)\n", target.Id, err)
 		return CheckResult{
 			InputTarget: target,
 			Status: "error",
-			Err: fmt.Errorf("impossible d'accéder au fichier %s : %w",
-				target.Path, err),
+			Err: &UnreachableFileError{Path: target.Path, Err: err, Type: target.Type},
+		}
+	}
+
+	if !utils.Contains(config.AuthorizedLogFileTypes(), target.Type) {
+		return CheckResult{
+			InputTarget: target,
+			Status: "error",
+			Err: &UnsupportedFileTypeError{Path: target.Path, Type: target.Type},
 		}
 	}
 
@@ -33,11 +39,10 @@ func AnalyzeLogFile(target config.InputTarget) CheckResult{
 	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
 
 	if rand.Float64() < 0.1 {
-		fmt.Printf("[%s] Erreur : parsing du log échoué\n", target.Id)
 		return CheckResult{
 			InputTarget: target,
 			Status: "error",
-			Err: fmt.Errorf("parsing du log échoué pour le fichier %s", target.Path),
+			Err: &ParsingError{Path: target.Path, Err: fmt.Errorf("parsing error"), Type: target.Type},
 		}
 	}
 

@@ -28,5 +28,15 @@
     "id": "corrupted-log",
     "path": "test_logs/corrupted.log",
     "type": "custom-app"
+  },
+  {
+    "id": "large-log",
+    "path": "test_logs/large.log",
+    "type": "generic"
+  },
+  {
+    "id": "xml-log",
+    "path": "test_logs/xml.log",
+    "type": "xml"
   }
 ]

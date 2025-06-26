@@ -23,3 +23,7 @@ func LoadTargetsFromFile(filePath string) ([]InputTarget, error) {
 	}
 	return targets, nil
 }
+
+func AuthorizedLogFileTypes() []string {
+	return []string{"nginx-access", "nginx-error", "custom-app", "generic", "mysql-error"}
+}
