@@ -3,14 +3,17 @@ package cmd
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/EFREI-M2-Dev/Go-Loganizer-YMF/internal/analyzer"
 	"github.com/EFREI-M2-Dev/Go-Loganizer-YMF/internal/config"
+	"github.com/EFREI-M2-Dev/Go-Loganizer-YMF/internal/utils"
 	"github.com/spf13/cobra"
 )
 
 var (
 	configFilePath string
+	outputFilePath string
 )
 
 var analyzeCmd = &cobra.Command{
@@ -31,6 +34,7 @@ Elle peut traiter des logs provenant de différentes sources et formats, en extr
 		}
 
 		var wg sync.WaitGroup
+		var results []utils.CheckResult
 
 		resultsChan := make(chan analyzer.CheckResult, len(targets))
 
@@ -51,7 +55,29 @@ Elle peut traiter des logs provenant de différentes sources et formats, en extr
 		wg.Wait()
 		close(resultsChan)
 
+		for result := range resultsChan {
+			utilsResult := utils.CheckResult{
+				InputTarget: result.InputTarget,
+				Status:      result.Status,
+				Timestamp:   time.Now(),
+			}
+			if result.Err != nil {
+				utilsResult.Error = result.Err.Error()
+			}
+			results = append(results, utilsResult)
+		}
+
 		fmt.Println("Analyse de tous les logs terminée.")
+
+		utils.DisplayResultsSummary(results)
+
+		if outputFilePath != "" {
+			if err := utils.ExportResultsToJSON(results, outputFilePath); err != nil {
+				fmt.Printf("Erreur lors de l'export JSON : %v\n", err)
+			}
+		} else {
+			fmt.Println("Aucun fichier de sortie spécifié. Utilisez --output pour exporter les résultats en JSON.")
+		}
 	},
 }
 
@@ -60,4 +86,5 @@ func init() {
 
 	analyzeCmd.Flags().StringVarP(&configFilePath, "config", "c", "", "Chemin du fichier de configuration à utiliser")
 	analyzeCmd.MarkFlagRequired("config")
+	analyzeCmd.Flags().StringVarP(&outputFilePath, "output", "o", "", "Chemin du fichier JSON de sortie pour les résultats")
 }
