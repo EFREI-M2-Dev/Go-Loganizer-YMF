@@ -42,7 +42,7 @@ Elle peut traiter des logs provenant de différentes sources et formats, en extr
 				resultsChan <- result
 			}(target)
 		}
-		
+
 		wg.Wait()
 		close(resultsChan)
 
@@ -52,7 +52,6 @@ Elle peut traiter des logs provenant de différentes sources et formats, en extr
 
 func init() {
 	rootCmd.AddCommand(analyzeCmd)
-
 	analyzeCmd.Flags().StringVarP(&configFilePath, "config", "c", "", "Chemin du fichier de configuration à utiliser")
 	analyzeCmd.MarkFlagRequired("config")
 }
