@@ -69,6 +69,8 @@ Elle peut traiter des logs provenant de différentes sources et formats, en extr
 
 		fmt.Println("Analyse de tous les logs terminée.")
 
+		utils.DisplayResultsSummary(results)
+
 		if outputFilePath != "" {
 			if err := utils.ExportResultsToJSON(results, outputFilePath); err != nil {
 				fmt.Printf("Erreur lors de l'export JSON : %v\n", err)
