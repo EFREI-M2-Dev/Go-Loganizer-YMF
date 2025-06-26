@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
+	"os"
 	"sync"
 	"time"
 
@@ -44,8 +46,23 @@ Elle peut traiter des logs provenant de différentes sources et formats, en extr
 				defer wg.Done()
 				result := analyzer.AnalyzeLogFile(t)
 
-				if result.Status == "error" {
-					fmt.Printf("%v\n", result.Err)
+				if result.Err != nil {
+					var unreachableErr *analyzer.UnreachableFileError
+					var parsingErr *analyzer.ParsingError
+					var unsupportedErr *analyzer.UnsupportedFileTypeError
+
+					switch {
+					case errors.Is(result.Err, os.ErrNotExist):
+						fmt.Printf("Erreur : (%v)\n", result.Err)
+					case errors.As(result.Err, &unreachableErr):
+						fmt.Printf("Erreur : %v\n", unreachableErr)
+					case errors.As(result.Err, &parsingErr):
+						fmt.Printf("Erreur : %v\n", parsingErr)
+					case errors.As(result.Err, &unsupportedErr):
+						fmt.Printf("Erreur : %v\n", unsupportedErr)
+					default:
+						fmt.Printf("Erreur inconnue : %v\n", result.Err)
+					}
 				}
 
 				resultsChan <- result
